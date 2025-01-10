@@ -5,6 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
      const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
      const suits = ["Herz", "Karo", "Pik", "Kreuz"];
 
+     //zum Erstellen eines vollständigen Kartendecks
+     function createDeck() {
+        const deck = [];
+        suits.forEach((suit) => {
+            values.forEach((value) => {
+                deck.push(`${value} ${suit}`);
+            });
+        });
+        return deck;
+    }
+    // Deck erstellen und ausgeben 
+    let deck = createDeck();
+    console.log("Deck erstellt:", deck);
+
     function startGame() {
         cardContainer.innerHTML = "";
 
