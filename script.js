@@ -32,11 +32,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Funktion: Karte anzeigen
-    function displayCard(card) {
+    function displayCard(card,container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3";
         cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
-        cardContainer.appendChild(cardDiv);
+        container.appendChild(cardDiv);
     }
      // Funktion: Verdeckte Karte anzeigen
      function displayHiddenCard(container) {
@@ -48,8 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Funktion: Spiel starten
     function startGame() {
         deck = createDeck(); // Neues Deck erstellen
-        dealerCardsContainer.innerHTML = "";
-        playerCardsContainer.innerHTML = "";
+        dealerCardsContainer.innerHTML = "";//Dealer-Bereich leeren
+        playerCardsContainer.innerHTML = "";//Spielr-Bereich leeren
         console.log("Neues Deck erstellt:", deck);
     
      // Spieler erhält 2 Karten
