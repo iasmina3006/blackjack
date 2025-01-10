@@ -21,6 +21,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function startGame() {
         cardContainer.innerHTML = "";
+    
+    //Ziehen einer zufälligen Karte
+    function drawRandomCard(deck) {
+        if (deck.length === 0) {
+            console.log("Keine Karten mehr im Deck!");
+            return null;
+        }
+        const randomIndex = Math.floor(Math.random() * deck.length);
+        const drawnCard = deck.splice(randomIndex, 1)[0];
+        return drawnCard;
+    }
+
+    //Karte ziehen
+    let card = drawRandomCard(deck);
+    console.log("Gezogene Karte:", card);
+    console.log("Verbleibende Karten im Deck:", deck.length);
 
         //Beispielkarten
         const cards = ["A", "K"];
