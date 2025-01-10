@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const startGameButton = document.getElementById("start-game");
-    const cardContainer = document.getElementById("card-container");
+    const hitButton = document.getElementById("hit-button");
+    const dealerCardsContainer = document.getElementById("dealer-cards");
+    const playerCardsContainer = document.getElementById("player-cards");
     let deck = []; // Kartendeck
 
     // Werte und Farben der Karten
@@ -36,29 +38,58 @@ document.addEventListener("DOMContentLoaded", () => {
         cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
         cardContainer.appendChild(cardDiv);
     }
-
+     // Funktion: Verdeckte Karte anzeigen
+     function displayHiddenCard(container) {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "card text-center p-3 bg-secondary text-light";
+        cardDiv.innerHTML = `<span class="fs-1">?</span>`;
+        container.appendChild(cardDiv);
+    }
     // Funktion: Spiel starten
     function startGame() {
         deck = createDeck(); // Neues Deck erstellen
-        cardContainer.innerHTML = ""; // Kartenanzeige zurücksetzen
+        dealerCardsContainer.innerHTML = "";
+        playerCardsContainer.innerHTML = "";
         console.log("Neues Deck erstellt:", deck);
-    }
+    
+     // Spieler erhält 2 Karten
+     const playerCard1 = drawRandomCard(deck);
+     const playerCard2 = drawRandomCard(deck);
+     displayCard(playerCard1, playerCardsContainer);
+     displayCard(playerCard2, playerCardsContainer);
+     console.log(`Spieler Karten: ${playerCard1}, ${playerCard2}`);
 
-    // Funktion: Karte ziehen
-    function drawCard() {
+     // Dealer erhält 2 Karten (eine verdeckt)
+     const dealerCard1 = drawRandomCard(deck);
+     const dealerCard2 = drawRandomCard(deck);
+     displayCard(dealerCard1, dealerCardsContainer); // Sichtbare Karte
+     displayHiddenCard(dealerCardsContainer); // Verdeckte Karte
+     console.log(`Dealer Karten: ${dealerCard1}, ${dealerCard2}`);
+
+     // "Hit"-Button aktivieren
+     hitButton.disabled = false;
+     }
+
+     // Funktion: Karte ziehen
+     function drawCard() {
         const card = drawRandomCard(deck);
         if (card) {
-            displayCard(card);
+            displayCard(card, playerCardsContainer);//Karte zum Spieler hinufügen
             console.log(`Gezogene Karte: ${card}`);
             console.log(`Verbleibende Karten im Deck: ${deck.length}`); // Deck-Länge prüfen
         } else {
             alert("Keine Karten mehr im Deck!");
+            hitButton.disabled = true;
         }
     }
 
     // Event-Listener für Start-Button
     startGameButton.addEventListener("click", () => {
         startGame();
-        drawCard(); // Erste Karte sofort nach dem Start ziehen
+    });
+       // Event-Listener für Hit-Button
+    hitButton.addEventListener("click", () => {
+        drawCard();
     });
 });
+
