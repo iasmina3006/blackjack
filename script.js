@@ -49,6 +49,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = drawRandomCard(deck);
         if (card) {
             displayCard(card);
+            console.log(`Gezogene Karte: ${card}`);
+            console.log(`Verbleibende Karten im Deck: ${deck.length}`); // Deck-Länge prüfen
         } else {
             alert("Keine Karten mehr im Deck!");
         }
