@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const startGameButton = document.getElementById("start-game");
-    const hitButton = document.getElementById("hit-button");
-    const dealerCardsContainer = document.getElementById("dealer-cards");
-    const playerCardsContainer = document.getElementById("player-cards");
+    const cardContainer = document.getElementById("card-container");
     let deck = []; // Kartendeck
 
     // Werte und Farben der Karten
@@ -32,64 +30,67 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Funktion: Karte anzeigen
-    function displayCard(card,container) {
+    function displayCard(card) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3";
         cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
-        container.appendChild(cardDiv);
+        cardContainer.appendChild(cardDiv);
     }
-     // Funktion: Verdeckte Karte anzeigen
-     function displayHiddenCard(container) {
-        const cardDiv = document.createElement("div");
-        cardDiv.className = "card text-center p-3 bg-secondary text-light";
-        cardDiv.innerHTML = `<span class="fs-1">?</span>`;
-        container.appendChild(cardDiv);
-    }
+
     // Funktion: Spiel starten
     function startGame() {
         deck = createDeck(); // Neues Deck erstellen
-        dealerCardsContainer.innerHTML = "";//Dealer-Bereich leeren
-        playerCardsContainer.innerHTML = "";//Spielr-Bereich leeren
+        cardContainer.innerHTML = ""; // Kartenanzeige zurücksetzen
         console.log("Neues Deck erstellt:", deck);
-    
-     // Spieler erhält 2 Karten
-     const playerCard1 = drawRandomCard(deck);
-     const playerCard2 = drawRandomCard(deck);
-     displayCard(playerCard1, playerCardsContainer);
-     displayCard(playerCard2, playerCardsContainer);
-     console.log(`Spieler Karten: ${playerCard1}, ${playerCard2}`);
+    }
 
-     // Dealer erhält 2 Karten (eine verdeckt)
-     const dealerCard1 = drawRandomCard(deck);
-     const dealerCard2 = drawRandomCard(deck);
-     displayCard(dealerCard1, dealerCardsContainer); // Sichtbare Karte
-     displayHiddenCard(dealerCardsContainer); // Verdeckte Karte
-     console.log(`Dealer Karten: ${dealerCard1}, ${dealerCard2}`);
-
-     // "Hit"-Button aktivieren
-     hitButton.disabled = false;
-     }
-
-     // Funktion: Karte ziehen
-     function drawCard() {
+    // Funktion: Karte ziehen
+    function drawCard() {
         const card = drawRandomCard(deck);
         if (card) {
-            displayCard(card, playerCardsContainer);//Karte zum Spieler hinufügen
+            displayCard(card);
             console.log(`Gezogene Karte: ${card}`);
             console.log(`Verbleibende Karten im Deck: ${deck.length}`); // Deck-Länge prüfen
         } else {
             alert("Keine Karten mehr im Deck!");
-            hitButton.disabled = true;
         }
     }
 
     // Event-Listener für Start-Button
     startGameButton.addEventListener("click", () => {
         startGame();
+        drawCard(); // Erste Karte sofort nach dem Start ziehen
     });
-       // Event-Listener für Hit-Button
-    hitButton.addEventListener("click", () => {
-        drawCard();
-    });
+    
+    function calculatePoints(hand) {
+        let points = 0;
+        let aces = 0;
+    
+        hand.forEach(card => {
+            const value = card.split(" ")[0]; // Erster Teil der Karte, z. B. "A", "2", "K"
+            if (!isNaN(value)) {
+                // Zahlenkarten (2–10)
+                points += parseInt(value);
+            } else if (["J", "Q", "K"].includes(value)) {
+                // Bildkarten (J, Q, K)
+                points += 10;
+            } else if (value === "A") {
+                // Ass
+                aces += 1;
+            }
+        });
+    
+        // Aces behandeln: 1 oder 11 Punkte
+        while (aces > 0) {
+            if (points + 11 <= 21) {
+                points += 11; // Ass zählt als 11
+            } else {
+                points += 1; // Ass zählt als 1
+            }
+            aces -= 1;
+        }
+    
+        return points;
+    }
+    
 });
-
