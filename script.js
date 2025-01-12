@@ -30,11 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Funktion: Karte anzeigen
-    function displayCard(card) {
+    function displayCard(card,container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3";
         cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
-        cardContainer.appendChild(cardDiv);
+        cardContainer.appendChild(cardDiv);//Karte wird zum Container hinzugefügt
      }
 
      // Funktion: Spiel starten
@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
          const playerPoints = calculatePoints(playerHand);
          console.log(`Spieler Karten: ${playerHand}, Punkte: ${playerPoints}`);
          document.getElementById("player-points").textContent = playerPoints;
+         const playerCardsContainer = document.getElementById("player-cards");
 
          // Dealer erhält 2 Karten (eine verdeckt)
          const dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
@@ -58,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
          const dealerPoints = calculatePoints([dealerHand[0]]); // Nur sichtbare Karte berechnen
          console.log(`Dealer Karten: ${dealerHand}, Sichtbare Punkte: ${dealerPoints}`);
          document.getElementById("dealer-points").textContent = dealerPoints;
+         const dealerCardsContainer = document.getElementById("dealer-cards");
 
          // "Hit"-Button aktivieren
          hitButton.disabled = false;
@@ -68,11 +70,23 @@ document.addEventListener("DOMContentLoaded", () => {
      function drawCard() {
         const card = drawRandomCard(deck);
         if (card) {
-            displayCard(card);
+            playerHand.push(card);
+            displayCard(card, playerCardsContainer);
+
+            const playerPoints = calculatePoints(playerHand);
+            document.getElementById("player-points").textContent = playerPoints;
+
             console.log(`Gezogene Karte: ${card}`);
+            console.log(`Spieler Punkte: ${playerPoints}`);
             console.log(`Verbleibende Karten im Deck: ${deck.length}`); // Deck-Länge prüfen
+
+            if (playerPoints > 21) {
+                alert("Bust! Du hast mehr als 21 Punkte.");
+                hitButton.disabled = true; // Hit deaktivieren
         } else {
             alert("Keine Karten mehr im Deck!");
+            hitButton.disabled = true;
+        }
         }
      }
 
