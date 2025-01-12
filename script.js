@@ -35,17 +35,35 @@ document.addEventListener("DOMContentLoaded", () => {
         cardDiv.className = "card text-center p-3";
         cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
         cardContainer.appendChild(cardDiv);
-    }
+     }
 
-    // Funktion: Spiel starten
-    function startGame() {
+     // Funktion: Spiel starten
+     function startGame() {
         deck = createDeck(); // Neues Deck erstellen
-        cardContainer.innerHTML = ""; // Kartenanzeige zurücksetzen
+        dealerCardsContainer.innerHTML = ""; // Dealer-Bereich leeren
+        playerCardsContainer.innerHTML = ""; // Spieler-Bereich leeren
         console.log("Neues Deck erstellt:", deck);
-    }
 
-    // Funktion: Karte ziehen
-    function drawCard() {
+         // Spieler erhält 2 Karten
+         const playerHand = [drawRandomCard(deck), drawRandomCard(deck)];
+         playerHand.forEach(card => displayCard(card, playerCardsContainer));
+         const playerPoints = calculatePoints(playerHand);
+         console.log(`Spieler Karten: ${playerHand}, Punkte: ${playerPoints}`);
+
+         // Dealer erhält 2 Karten (eine verdeckt)
+         const dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
+         displayCard(dealerHand[0], dealerCardsContainer); // Sichtbare Karte
+         displayHiddenCard(dealerCardsContainer); // Verdeckte Karte
+         const dealerPoints = calculatePoints([dealerHand[0]]); // Nur sichtbare Karte berechnen
+         console.log(`Dealer Karten: ${dealerHand}, Sichtbare Punkte: ${dealerPoints}`);
+
+         // "Hit"-Button aktivieren
+         hitButton.disabled = false;
+
+     }
+
+     // Funktion: Karte ziehen
+     function drawCard() {
         const card = drawRandomCard(deck);
         if (card) {
             displayCard(card);
@@ -54,15 +72,15 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             alert("Keine Karten mehr im Deck!");
         }
-    }
+     }
 
-    // Event-Listener für Start-Button
-    startGameButton.addEventListener("click", () => {
+     // Event-Listener für Start-Button
+     startGameButton.addEventListener("click", () => {
         startGame();
         drawCard(); // Erste Karte sofort nach dem Start ziehen
     });
-    
-    function calculatePoints(hand) {
+
+     function calculatePoints(hand) {
         let points = 0;
         let aces = 0;
     
