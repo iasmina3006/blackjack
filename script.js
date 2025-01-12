@@ -41,7 +41,14 @@ document.addEventListener("DOMContentLoaded", () => {
         cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
         container.appendChild(cardDiv);
     }
-
+    
+    function displayHiddenCard(container) {
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "card text-center p-3 bg-secondary text-light";
+        cardDiv.innerHTML = `<span class="fs-1">?</span>`;
+        container.appendChild(cardDiv);
+    }
+    
     // Funktion: Punkte berechnen
     function calculatePoints(hand) {
         let points = 0;
@@ -93,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Dealer erhält 2 Karten (eine verdeckt)
         dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
         displayCard(dealerHand[0], dealerCardsContainer); // Sichtbare Karte
+        displayHiddenCard(dealerCardsContainer); // Verdeckte Karte
         const dealerPoints = calculatePoints([dealerHand[0]]);
         document.getElementById("dealer-points").textContent = dealerPoints;
 
