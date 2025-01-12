@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const playerCardsContainer = document.getElementById("player-cards");
+    const dealerCardsContainer = document.getElementById("dealer-cards");
+
     const startGameButton = document.getElementById("start-game");
     const cardContainer = document.getElementById("card-container");
     let deck = []; // Kartendeck
@@ -34,11 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3";
         cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
-        cardContainer.appendChild(cardDiv);//Karte wird zum Container hinzugefügt
+        container.appendChild(cardDiv);//Karte wird zum Container hinzugefügt
      }
-
+     let playerHand = [];
+    let dealerHand = [];
+ 
      // Funktion: Spiel starten
      function startGame() {
+        playerHand = [drawRandomCard(deck), drawRandomCard(deck)];
+        dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
         deck = createDeck(); // Neues Deck erstellen
         dealerCardsContainer.innerHTML = ""; // Dealer-Bereich leeren
         playerCardsContainer.innerHTML = ""; // Spieler-Bereich leeren
@@ -50,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
          const playerPoints = calculatePoints(playerHand);
          console.log(`Spieler Karten: ${playerHand}, Punkte: ${playerPoints}`);
          document.getElementById("player-points").textContent = playerPoints;
-         const playerCardsContainer = document.getElementById("player-cards");
+         
 
          // Dealer erhält 2 Karten (eine verdeckt)
          const dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
@@ -59,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
          const dealerPoints = calculatePoints([dealerHand[0]]); // Nur sichtbare Karte berechnen
          console.log(`Dealer Karten: ${dealerHand}, Sichtbare Punkte: ${dealerPoints}`);
          document.getElementById("dealer-points").textContent = dealerPoints;
-         const dealerCardsContainer = document.getElementById("dealer-cards");
+         
 
          // "Hit"-Button aktivieren
          hitButton.disabled = false;
@@ -93,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
      // Event-Listener für Start-Button
      startGameButton.addEventListener("click", () => {
         startGame();
-        drawCard(); // Erste Karte sofort nach dem Start ziehen
     });
 
      function calculatePoints(hand) {
