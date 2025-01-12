@@ -81,10 +81,17 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("player-points").textContent = calculatePoints(playerHand);
 
         dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
-        displayCard(dealerHand[0], dealerCardsContainer);
-        displayHiddenCard(dealerCardsContainer);
+        displayCard(dealerHand[0], dealerCardsContainer); // Zeige die erste Karte
+        displayHiddenCard(dealerCardsContainer); // Verdeckte Karte
+        document.getElementById("dealer-points").textContent = calculatePoints([dealerHand[0]]);
 
         hitButton.disabled = false;
+    }
+
+    function revealDealerHand() {
+        dealerCardsContainer.innerHTML = ""; // Lösche die Kartenanzeige
+        dealerHand.forEach(card => displayCard(card, dealerCardsContainer));
+        document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
     }
 
     function drawCard() {
@@ -99,6 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (playerPoints > 21) {
                 alert("Bust! Du hast mehr als 21 Punkte.");
                 hitButton.disabled = true;
+                revealDealerHand(); // Deckt die Dealer-Hand auf
             }
         }
     }
