@@ -49,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
          playerHand.forEach(card => displayCard(card, playerCardsContainer));
          const playerPoints = calculatePoints(playerHand);
          console.log(`Spieler Karten: ${playerHand}, Punkte: ${playerPoints}`);
+         document.getElementById("player-points").textContent = playerPoints;
 
          // Dealer erhält 2 Karten (eine verdeckt)
          const dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
@@ -56,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
          displayHiddenCard(dealerCardsContainer); // Verdeckte Karte
          const dealerPoints = calculatePoints([dealerHand[0]]); // Nur sichtbare Karte berechnen
          console.log(`Dealer Karten: ${dealerHand}, Sichtbare Punkte: ${dealerPoints}`);
+         document.getElementById("dealer-points").textContent = dealerPoints;
 
          // "Hit"-Button aktivieren
          hitButton.disabled = false;
