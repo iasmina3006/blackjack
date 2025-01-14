@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const startGameButton = document.getElementById("start-game");
     const hitButton = document.getElementById("hit-button");
-    const standButton = document.getElementById("stand-button");
     const playerCardsContainer = document.getElementById("player-cards");
     const dealerCardsContainer = document.getElementById("dealer-cards");
 
@@ -23,10 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function drawRandomCard(deck) {
-        if (deck.length === 0) {
-            console.log("Keine Karten mehr im Deck!");
-            return null;
-        }
         const randomIndex = Math.floor(Math.random() * deck.length);
         return deck.splice(randomIndex, 1)[0];
     }
@@ -34,14 +29,14 @@ document.addEventListener("DOMContentLoaded", () => {
     function displayCard(card, container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3";
-        cardDiv.innerHTML = `<span class="fs-1">${card}</span>`;
+        cardDiv.innerHTML = `<span>${card}</span>`;
         container.appendChild(cardDiv);
     }
 
     function displayHiddenCard(container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3 bg-secondary text-light";
-        cardDiv.innerHTML = `<span class="fs-1">?</span>`;
+        cardDiv.innerHTML = `<span>?</span>`;
         container.appendChild(cardDiv);
     }
 
@@ -84,76 +79,56 @@ document.addEventListener("DOMContentLoaded", () => {
         dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
         displayCard(dealerHand[0], dealerCardsContainer);
         displayHiddenCard(dealerCardsContainer);
-        document.getElementById("dealer-points").textContent = calculatePoints([dealerHand[0]]);
 
         hitButton.disabled = false;
-        standButton.disabled = false;
-    }
-
-    function playDealer() {
-        console.log("Dealer beginnt zu ziehen...");
-        while (calculatePoints(dealerHand) < 17 || 
-               (calculatePoints(dealerHand) === 17 && dealerHand.some(card => card.includes("A")))) {
-            const card = drawRandomCard(deck);
-            dealerHand.push(card);
-            displayCard(card, dealerCardsContainer);
-            console.log("Dealer zieht:", card);
-        }
-
-        // Verdeckte Karte aufdecken
-        revealDealerHiddenCard();
-
-        checkGameEnd();
     }
 
     function revealDealerHiddenCard() {
-        dealerCardsContainer.innerHTML = ""; // Kartenbereich leeren
+        dealerCardsContainer.innerHTML = "";
         dealerHand.forEach(card => displayCard(card, dealerCardsContainer));
         document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
     }
 
-    function checkGameEnd() {
+    function playDealer() {
+        while (calculatePoints(dealerHand) < 17) {
+            const card = drawRandomCard(deck);
+            dealerHand.push(card);
+        }
+
+        revealDealerHiddenCard();
+        checkGameResult();
+    }
+
+    function checkGameResult() {
         const playerPoints = calculatePoints(playerHand);
         const dealerPoints = calculatePoints(dealerHand);
 
-        if (dealerPoints > 21) {
-            alert("Dealer hat über 21 Punkte! Du gewinnst!");
-        } else if (playerPoints > dealerPoints) {
-            alert("Du gewinnst! Deine Punkte sind näher an 21.");
-        } else if (playerPoints < dealerPoints) {
-            alert("Dealer gewinnt!");
-        } else {
+        if (dealerPoints > 21 || playerPoints > dealerPoints) {
+            alert("Du gewinnst!");
+        } else if (playerPoints === dealerPoints) {
             alert("Unentschieden!");
+        } else {
+            alert("Dealer gewinnt!");
         }
 
         hitButton.disabled = true;
-        standButton.disabled = true;
-        console.log("Spiel beendet.");
     }
 
     function drawCard() {
         const card = drawRandomCard(deck);
-        if (card) {
-            playerHand.push(card);
-            displayCard(card, playerCardsContainer);
+        playerHand.push(card);
+        displayCard(card, playerCardsContainer);
 
-            const playerPoints = calculatePoints(playerHand);
-            document.getElementById("player-points").textContent = playerPoints;
+        const playerPoints = calculatePoints(playerHand);
+        document.getElementById("player-points").textContent = playerPoints;
 
-            if (playerPoints > 21) {
-                alert("Bust! Du hast mehr als 21 Punkte.");
-                hitButton.disabled = true;
-                standButton.disabled = true;
-                playDealer();
-            }
+        if (playerPoints > 21) {
+            alert("Bust! Du hast verloren.");
+            hitButton.disabled = true;
+            playDealer();
         }
     }
 
     startGameButton.addEventListener("click", startGame);
     hitButton.addEventListener("click", drawCard);
-    standButton.addEventListener("click", () => {
-        hitButton.disabled = true;
-        standButton.disabled = true;
-        playDealer();
-    });
 });
