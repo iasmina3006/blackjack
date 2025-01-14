@@ -84,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
 
         hitButton.disabled = false;
+        standButton.disabled = false;
     }
 
     function revealDealerHiddenCard() {
@@ -122,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         hitButton.disabled = true;
+        standButton.disabled = true;
     }
 
     function drawCard() {
@@ -139,19 +141,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    startGameButton.addEventListener("click", startGame);
-    hitButton.addEventListener("click", drawCard);
-
     // Button für "Stand" hinzufügen
     const standButton = document.createElement("button");
     standButton.id = "stand-button";
     standButton.className = "btn btn-primary btn-lg mt-3";
     standButton.textContent = "Stand";
-    standButton.disabled = true;
+    standButton.disabled = true; // Stand ist am Anfang deaktiviert
     standButton.addEventListener("click", () => {
         hitButton.disabled = true;
         standButton.disabled = true;
         playDealer();
     });
     startGameButton.insertAdjacentElement("afterend", standButton);
+
+    startGameButton.addEventListener("click", () => {
+        startGame();
+        standButton.disabled = false; // Stand wird aktiviert, wenn das Spiel startet
+    });
+    hitButton.addEventListener("click", drawCard);
 });
