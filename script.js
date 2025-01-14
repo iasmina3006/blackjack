@@ -92,14 +92,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function playDealer() {
         console.log("Dealer beginnt zu ziehen...");
-        while (calculatePoints(dealerHand) < 17) {
+        while (calculatePoints(dealerHand) < 17 || 
+               (calculatePoints(dealerHand) === 17 && dealerHand.some(card => card.includes("A")))) {
             const card = drawRandomCard(deck);
             dealerHand.push(card);
             displayCard(card, dealerCardsContainer);
             console.log("Dealer zieht:", card);
         }
-        document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
+
+        // Verdeckte Karte aufdecken
+        revealDealerHiddenCard();
+
         checkGameEnd();
+    }
+
+    function revealDealerHiddenCard() {
+        dealerCardsContainer.innerHTML = ""; // Kartenbereich leeren
+        dealerHand.forEach(card => displayCard(card, dealerCardsContainer));
+        document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
     }
 
     function checkGameEnd() {
@@ -117,6 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         hitButton.disabled = true;
+        standButton.disabled = true;
         console.log("Spiel beendet.");
     }
 
