@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let deck = [];
     let playerHand = [];
     let dealerHand = [];
+    let dealerHiddenCard = null; // Verdeckte Karte des Dealers
 
     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     const suits = ["Herz", "Karo", "Pik", "Kreuz"];
@@ -76,26 +77,31 @@ document.addEventListener("DOMContentLoaded", () => {
         playerHand.forEach(card => displayCard(card, playerCardsContainer));
         document.getElementById("player-points").textContent = calculatePoints(playerHand);
 
-        dealerHand = [drawRandomCard(deck), drawRandomCard(deck)];
+        dealerHand = [drawRandomCard(deck)];
+        dealerHiddenCard = drawRandomCard(deck); // Eine Karte verdeckt
         displayCard(dealerHand[0], dealerCardsContainer);
         displayHiddenCard(dealerCardsContainer);
+        document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
 
         hitButton.disabled = false;
     }
 
     function revealDealerHiddenCard() {
+        dealerHand.push(dealerHiddenCard); // Verdeckte Karte zum Dealer-Hand hinzufügen
         dealerCardsContainer.innerHTML = "";
         dealerHand.forEach(card => displayCard(card, dealerCardsContainer));
         document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
     }
 
     function playDealer() {
+        revealDealerHiddenCard(); // Verdeckte Karte aufdecken
+
         while (calculatePoints(dealerHand) < 17) {
             const card = drawRandomCard(deck);
             dealerHand.push(card);
+            displayCard(card, dealerCardsContainer);
         }
 
-        revealDealerHiddenCard();
         checkGameResult();
     }
 
@@ -103,12 +109,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const playerPoints = calculatePoints(playerHand);
         const dealerPoints = calculatePoints(dealerHand);
 
-        if (dealerPoints > 21 || playerPoints > dealerPoints) {
+        if (playerPoints > 21) {
+            alert("Bust! Du hast verloren.");
+        } else if (dealerPoints > 21) {
+            alert("Dealer hat über 21 Punkte! Du gewinnst!");
+        } else if (playerPoints > dealerPoints) {
             alert("Du gewinnst!");
-        } else if (playerPoints === dealerPoints) {
-            alert("Unentschieden!");
-        } else {
+        } else if (playerPoints < dealerPoints) {
             alert("Dealer gewinnt!");
+        } else {
+            alert("Unentschieden!");
         }
 
         hitButton.disabled = true;
@@ -131,4 +141,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     startGameButton.addEventListener("click", startGame);
     hitButton.addEventListener("click", drawCard);
+
+    // Button für "Stand" hinzufügen
+    const standButton = document.createElement("button");
+    standButton.id = "stand-button";
+    standButton.className = "btn btn-primary btn-lg mt-3";
+    standButton.textContent = "Stand";
+    standButton.disabled = true;
+    standButton.addEventListener("click", () => {
+        hitButton.disabled = true;
+        standButton.disabled = true;
+        playDealer();
+    });
+    startGameButton.insertAdjacentElement("afterend", standButton);
 });
