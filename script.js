@@ -138,15 +138,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function drawCard() {
         const card = drawRandomCard(deck);
         playerHand.push(card);
-        displayCard(card, playerCardsContainer);
-
+        displayCard(card, playerCardsContainer);//Neue Karte Anzeigen
+        //Punkte aktualisieren
         const playerPoints = calculatePoints(playerHand);
         document.getElementById("player-points").textContent = playerPoints;
-
+        //Überprüfen ob der Spieler verloren hat
         if (playerPoints > 21) {
-            alert("Bust! Du hast verloren.");
-            hitButton.disabled = true;
-            playDealer();
+             // Mitteilung erst nach kurzer Verzögerung zeigen
+            setTimeout(() => {
+            alert("Bust! Du hast verloren.");// Spieler hat mehr als 21 Punkte
+            hitButton.disabled = true;// Hit deaktivieren
+            playDealer();// Dealer spielt weiter
+        }, 500);// 500ms Verzögerung
         }
     }
 
