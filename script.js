@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         return points;
     }
-    
+
     function startGame() {
         deck = createDeck();
         playerCardsContainer.innerHTML = "";
@@ -91,21 +91,31 @@ document.addEventListener("DOMContentLoaded", () => {
         dealerCardsContainer.innerHTML = "";
         dealerHand.forEach(card => displayCard(card, dealerCardsContainer));
         document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
-    }
+     }
 
-    function playDealer() {
-        revealDealerHiddenCard(); // Verdeckte Karte aufdecken
+     function playDealer() {
+      revealDealerHiddenCard(); // Verdeckte Karte aufdecken
 
-        while (calculatePoints(dealerHand) < 17) {
-            const card = drawRandomCard(deck);
-            dealerHand.push(card);
-            displayCard(card, dealerCardsContainer);
+     while (calculatePoints(dealerHand) < 17) {
+        const card = drawRandomCard(deck);
+        dealerHand.push(card);
+        displayCard(card, dealerCardsContainer); // Neue Karte anzeigen
+
+        // Punkte aktualisieren
+        const dealerPoints = calculatePoints(dealerHand);
+        document.getElementById("dealer-points").textContent = dealerPoints;
+
+        if (dealerPoints > 21) {
+            console.log("Dealer hat über 21 Punkte!");
+            break; // Schleife beenden, wenn Dealer über 21 ist
         }
+     }
 
-        checkGameResult();
-    }
+       checkGameResult(); // Spielausgang prüfen
+     }
 
-    function checkGameResult() {
+
+       function checkGameResult() {
         const playerPoints = calculatePoints(playerHand);
         const dealerPoints = calculatePoints(dealerHand);
 
