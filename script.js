@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // HTML-Elemente referenzieren
     const startGameButton = document.getElementById("start-game");
     const hitButton = document.getElementById("hit-button");
     const playerCardsContainer = document.getElementById("player-cards");
@@ -9,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let chips = 1000; // Startguthaben
     let bet = 100; // Standard-Einsatz
 
-    // Spiel-Logik Variablen
     let deck = [];
     let playerHand = [];
     let dealerHand = [];
@@ -18,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     const suits = ["Herz", "Karo", "Pik", "Kreuz"];
 
-    // Chips- und Einsatzanzeige erstellen
     const chipsDisplay = document.createElement("div");
     chipsDisplay.id = "chips-display";
     chipsDisplay.className = "mt-3";
@@ -31,13 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
     betDisplay.textContent = `Einsatz: ${bet}`;
     document.body.insertBefore(betDisplay, document.body.firstChild);
 
-    // Funktion zur Aktualisierung der Chips-Anzeige
     function updateChipsDisplay() {
         chipsDisplay.textContent = `Chips: ${chips}`;
         betDisplay.textContent = `Einsatz: ${bet}`;
     }
 
-    // Deck erstellen
     function createDeck() {
         const deck = [];
         suits.forEach((suit) => {
@@ -48,13 +43,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return deck;
     }
 
-    // Eine zufällige Karte ziehen
     function drawRandomCard(deck) {
         const randomIndex = Math.floor(Math.random() * deck.length);
         return deck.splice(randomIndex, 1)[0];
     }
 
-    // Karte im Container anzeigen
     function displayCard(card, container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3";
@@ -62,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(cardDiv);
     }
 
-    // Verdeckte Karte anzeigen
     function displayHiddenCard(container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3 bg-secondary text-light";
@@ -70,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(cardDiv);
     }
 
-    // Punkte berechnen
     function calculatePoints(hand) {
         let points = 0;
         let aces = 0;
@@ -97,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return points;
     }
 
-    // Spiel starten
     function startGame() {
         if (chips < bet) {
             alert("Nicht genug Chips für diesen Einsatz!");
@@ -123,12 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         hitButton.disabled = false;
         standButton.disabled = false;
-
-        // Double Down aktivieren, nur bei den ersten zwei Karten
-        doubleDownButton.disabled = false;
+        doubleDownButton.disabled = false; // Double Down aktivieren
     }
 
-    // Verdeckte Karte des Dealers aufdecken
     function revealDealerHiddenCard() {
         dealerHand.push(dealerHiddenCard);
         dealerHiddenCard = null;
@@ -137,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
     }
 
-    // Dealer spielt
     function playDealer() {
         revealDealerHiddenCard();
 
@@ -150,7 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
         checkGameResult();
     }
 
-    // Ergebnis prüfen
     function checkGameResult() {
         const playerPoints = calculatePoints(playerHand);
         const dealerPoints = calculatePoints(dealerHand);
@@ -177,10 +162,16 @@ document.addEventListener("DOMContentLoaded", () => {
             chips = 1000;
             bet = 100;
             updateChipsDisplay();
+            return;
         }
+
+        const keepBet = confirm("Möchtest du den aktuellen Einsatz beibehalten? (OK: Beibehalten, Abbrechen: Zurücksetzen auf 100)");
+        if (!keepBet) {
+            bet = 100;
+        }
+        updateChipsDisplay();
     }
 
-    // Spieler zieht eine Karte
     function drawCard() {
         const card = drawRandomCard(deck);
         playerHand.push(card);
@@ -198,15 +189,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Double Down-Button erstellen
     const doubleDownButton = document.createElement("button");
     doubleDownButton.id = "double-down-button";
     doubleDownButton.className = "btn btn-success btn-lg mt-3";
     doubleDownButton.textContent = "Double";
-    doubleDownButton.disabled = true; // Button ist standardmäßig deaktiviert
+    doubleDownButton.disabled = true;
     startGameButton.insertAdjacentElement("afterend", doubleDownButton);
 
-    // Double Down-Logik
     doubleDownButton.addEventListener("click", () => {
         if (chips < bet * 2) {
             alert("Nicht genug Chips, um den Einsatz zu verdoppeln!");
@@ -217,7 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
         bet *= 2;
         updateChipsDisplay();
 
-        // Spieler zieht eine Karte
         const card = drawRandomCard(deck);
         playerHand.push(card);
         displayCard(card, playerCardsContainer);
@@ -225,7 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const playerPoints = calculatePoints(playerHand);
         document.getElementById("player-points").textContent = playerPoints;
 
-        // Überprüfen, ob der Spieler "Bust" geht
         if (playerPoints > 21) {
             setTimeout(() => {
                 alert("Bust! Du hast verloren.");
@@ -237,19 +224,17 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Spieler beendet seinen Zug automatisch
         hitButton.disabled = true;
         doubleDownButton.disabled = true;
         standButton.disabled = true;
         playDealer();
     });
 
-    // "Stand"-Button erstellen
     const standButton = document.createElement("button");
     standButton.id = "stand-button";
     standButton.className = "btn btn-primary btn-lg mt-3";
     standButton.textContent = "Stand";
-    standButton.disabled = true; // Button ist standardmäßig deaktiviert
+    standButton.disabled = true;
     standButton.addEventListener("click", () => {
         hitButton.disabled = true;
         standButton.disabled = true;
@@ -257,10 +242,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     startGameButton.insertAdjacentElement("afterend", standButton);
 
-    // Event-Listener für Buttons
     startGameButton.addEventListener("click", () => {
         startGame();
         standButton.disabled = false;
     });
+
     hitButton.addEventListener("click", drawCard);
 });
