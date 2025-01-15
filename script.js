@@ -48,26 +48,25 @@ document.addEventListener("DOMContentLoaded", () => {
         hand.forEach(card => {
             const value = card.split(" ")[0];
             if (!isNaN(value)) {
-                points += parseInt(value);
+                points += parseInt(value);//Zahlenkarten
             } else if (["J", "Q", "K"].includes(value)) {
-                points += 10;
+                points += 10;//Bildkarten
             } else if (value === "A") {
-                aces += 1;
+                aces += 1;//Zählt Asse separat
             }
         });
 
-        while (aces > 0) {
+        for (let i = 0; i < aces; i++) {
             if (points + 11 <= 21) {
-                points += 11;
+                points += 11; // Ass als 11 zählen
             } else {
-                points += 1;
+                points += 1; // Ass als 1 zählen
             }
-            aces -= 1;
         }
-
+    
         return points;
     }
-
+    
     function startGame() {
         deck = createDeck();
         playerCardsContainer.innerHTML = "";
