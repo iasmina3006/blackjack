@@ -1,11 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // HTML-Elemente referenzieren
     const startGameButton = document.getElementById("start-game");
     const hitButton = document.getElementById("hit-button");
     const playerCardsContainer = document.getElementById("player-cards");
     const dealerCardsContainer = document.getElementById("dealer-cards");
 
+    // Chips-System Variablen
     let chips = 1000; // Startguthaben
     let bet = 100; // Standard-Einsatz
+
+    // Spiel-Logik Variablen
     let deck = [];
     let playerHand = [];
     let dealerHand = [];
@@ -13,31 +17,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     const suits = ["Herz", "Karo", "Pik", "Kreuz"];
-     // Chips- und Einsatzanzeige erstellen
-     const chipsDisplay = document.createElement("div");
-     chipsDisplay.id = "chips-display";
-     chipsDisplay.className = "mt-3";
-     chipsDisplay.textContent = `Chips: ${chips}`;
-     document.body.insertBefore(chipsDisplay, document.body.firstChild);
- 
-     const betDisplay = document.createElement("div");
-     betDisplay.id = "bet-display";
-     betDisplay.className = "mt-3";
-     betDisplay.textContent = `Einsatz: ${bet}`;
-     document.body.insertBefore(betDisplay, document.body.firstChild);
- 
-     // Funktion zur Aktualisierung der Anzeige
-     function updateChipsDisplay() {
-         chipsDisplay.textContent = `Chips: ${chips}`;
-         betDisplay.textContent = `Einsatz: ${bet}`;
-     }
- 
-     // Test: Anzeigen aktualisieren
-     setTimeout(() => {
-         chips -= 100; // Beispiel: Chips verringern
-         updateChipsDisplay();
-     }, 2000);
- });
+
+    // Chips- und Einsatzanzeige erstellen
+    const chipsDisplay = document.createElement("div");
+    chipsDisplay.id = "chips-display";
+    chipsDisplay.className = "mt-3";
+    chipsDisplay.textContent = `Chips: ${chips}`;
+    document.body.insertBefore(chipsDisplay, document.body.firstChild);
+
+    const betDisplay = document.createElement("div");
+    betDisplay.id = "bet-display";
+    betDisplay.className = "mt-3";
+    betDisplay.textContent = `Einsatz: ${bet}`;
+    document.body.insertBefore(betDisplay, document.body.firstChild);
+
+    // Funktion zur Aktualisierung der Chips-Anzeige
+    function updateChipsDisplay() {
+        chipsDisplay.textContent = `Chips: ${chips}`;
+        betDisplay.textContent = `Einsatz: ${bet}`;
+    }
+
+    // Deck erstellen
     function createDeck() {
         const deck = [];
         suits.forEach((suit) => {
@@ -48,11 +48,13 @@ document.addEventListener("DOMContentLoaded", () => {
         return deck;
     }
 
+    // Eine zufällige Karte ziehen
     function drawRandomCard(deck) {
         const randomIndex = Math.floor(Math.random() * deck.length);
         return deck.splice(randomIndex, 1)[0];
     }
 
+    // Karte im Container anzeigen
     function displayCard(card, container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3";
@@ -60,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(cardDiv);
     }
 
+    // Verdeckte Karte anzeigen
     function displayHiddenCard(container) {
         const cardDiv = document.createElement("div");
         cardDiv.className = "card text-center p-3 bg-secondary text-light";
@@ -67,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(cardDiv);
     }
 
+    // Punkte berechnen
     function calculatePoints(hand) {
         let points = 0;
         let aces = 0;
@@ -74,26 +78,35 @@ document.addEventListener("DOMContentLoaded", () => {
         hand.forEach(card => {
             const value = card.split(" ")[0];
             if (!isNaN(value)) {
-                points += parseInt(value);//Zahlenkarten
+                points += parseInt(value);
             } else if (["J", "Q", "K"].includes(value)) {
-                points += 10;//Bildkarten
+                points += 10;
             } else if (value === "A") {
-                aces += 1;//Zählt Asse separat
+                aces += 1;
             }
         });
 
         for (let i = 0; i < aces; i++) {
             if (points + 11 <= 21) {
-                points += 11; // Ass als 11 zählen
+                points += 11;
             } else {
-                points += 1; // Ass als 1 zählen
+                points += 1;
             }
         }
-    
+
         return points;
     }
 
+    // Spiel starten
     function startGame() {
+        if (chips < bet) {
+            alert("Nicht genug Chips für diesen Einsatz!");
+            return;
+        }
+
+        chips -= bet; // Einsatz abziehen
+        updateChipsDisplay();
+
         deck = createDeck();
         playerCardsContainer.innerHTML = "";
         dealerCardsContainer.innerHTML = "";
@@ -103,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("player-points").textContent = calculatePoints(playerHand);
 
         dealerHand = [drawRandomCard(deck)];
-        dealerHiddenCard = drawRandomCard(deck); // Eine Karte verdeckt
+        dealerHiddenCard = drawRandomCard(deck);
         displayCard(dealerHand[0], dealerCardsContainer);
         displayHiddenCard(dealerCardsContainer);
         document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
@@ -112,36 +125,30 @@ document.addEventListener("DOMContentLoaded", () => {
         standButton.disabled = false;
     }
 
+    // Verdeckte Karte des Dealers aufdecken
     function revealDealerHiddenCard() {
-        dealerHand.push(dealerHiddenCard); // Verdeckte Karte zum Dealer-Hand hinzufügen
+        dealerHand.push(dealerHiddenCard);
+        dealerHiddenCard = null;
         dealerCardsContainer.innerHTML = "";
         dealerHand.forEach(card => displayCard(card, dealerCardsContainer));
         document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
-     }
+    }
 
-     function playDealer() {
-      revealDealerHiddenCard(); // Verdeckte Karte aufdecken
+    // Dealer spielt
+    function playDealer() {
+        revealDealerHiddenCard();
 
-     while (calculatePoints(dealerHand) < 17) {
-        const card = drawRandomCard(deck);
-        dealerHand.push(card);
-        displayCard(card, dealerCardsContainer); // Neue Karte anzeigen
-
-        // Punkte aktualisieren
-        const dealerPoints = calculatePoints(dealerHand);
-        document.getElementById("dealer-points").textContent = dealerPoints;
-
-        if (dealerPoints > 21) {
-            console.log("Dealer hat über 21 Punkte!");
-            break; // Schleife beenden, wenn Dealer über 21 ist
+        while (calculatePoints(dealerHand) < 17) {
+            const card = drawRandomCard(deck);
+            dealerHand.push(card);
+            displayCard(card, dealerCardsContainer);
         }
-     }
 
-       checkGameResult(); // Spielausgang prüfen
-     }
+        checkGameResult();
+    }
 
-
-       function checkGameResult() {
+    // Ergebnis prüfen
+    function checkGameResult() {
         const playerPoints = calculatePoints(playerHand);
         const dealerPoints = calculatePoints(dealerHand);
 
@@ -149,42 +156,51 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Bust! Du hast verloren.");
         } else if (dealerPoints > 21) {
             alert("Dealer hat über 21 Punkte! Du gewinnst!");
+            chips += bet * 2;
         } else if (playerPoints > dealerPoints) {
             alert("Du gewinnst!");
-        } else if (playerPoints < dealerPoints) {
-            alert("Dealer gewinnt!");
+            chips += bet * 2;
+        } else if (playerPoints === dealerPoints) {
+            alert("Unentschieden! Einsatz zurück.");
+            chips += bet;
         } else {
-            alert("Unentschieden!");
+            alert("Dealer gewinnt!");
         }
 
-        hitButton.disabled = true;
-        standButton.disabled = true;
+        updateChipsDisplay();
+
+        if (chips < 100) {
+            alert("Du hast keine Chips mehr! Spiel zurückgesetzt.");
+            chips = 1000;
+            bet = 100;
+            updateChipsDisplay();
+        }
     }
 
+    // Spieler zieht eine Karte
     function drawCard() {
         const card = drawRandomCard(deck);
         playerHand.push(card);
-        displayCard(card, playerCardsContainer);//Neue Karte Anzeigen
-        //Punkte aktualisieren
+        displayCard(card, playerCardsContainer);
+
         const playerPoints = calculatePoints(playerHand);
         document.getElementById("player-points").textContent = playerPoints;
-        //Überprüfen ob der Spieler verloren hat
+
         if (playerPoints > 21) {
-             // Mitteilung erst nach kurzer Verzögerung zeigen
             setTimeout(() => {
-            alert("Bust! Du hast verloren.");// Spieler hat mehr als 21 Punkte
-            hitButton.disabled = true;// Hit deaktivieren
-            playDealer();// Dealer spielt weiter
-        }, 500);// 500ms Verzögerung
+                alert("Bust! Du hast verloren.");
+                hitButton.disabled = true;
+                playDealer();
+            }, 500);
         }
     }
 
-    // Button für "Stand" hinzufügen
+    // "Stand"-Button hinzufügen
     const standButton = document.createElement("button");
     standButton.id = "stand-button";
     standButton.className = "btn btn-primary btn-lg mt-3";
     standButton.textContent = "Stand";
-    standButton.disabled = true; // Stand ist am Anfang deaktiviert
+    standButton.disabled = true;
     standButton.addEventListener("click", () => {
         hitButton.disabled = true;
         standButton.disabled = true;
@@ -192,9 +208,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     startGameButton.insertAdjacentElement("afterend", standButton);
 
+    // Event-Listener für Buttons
     startGameButton.addEventListener("click", () => {
         startGame();
-        standButton.disabled = false; // Stand wird aktiviert, wenn das Spiel startet
+        standButton.disabled = false;
     });
     hitButton.addEventListener("click", drawCard);
 });
