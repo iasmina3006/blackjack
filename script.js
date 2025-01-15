@@ -74,28 +74,30 @@ document.addEventListener("DOMContentLoaded", () => {
     function calculatePoints(hand) {
         let points = 0;
         let aces = 0;
-
+    
         hand.forEach(card => {
             const value = card.split(" ")[0];
             if (!isNaN(value)) {
-                points += parseInt(value);
+                points += parseInt(value); // Zahlenkarten
             } else if (["J", "Q", "K"].includes(value)) {
-                points += 10;
+                points += 10; // Bildkarten
             } else if (value === "A") {
-                aces += 1;
+                aces += 1; // Ass
             }
         });
-
+    
+        // Dynamische Bewertung der Asses
         for (let i = 0; i < aces; i++) {
             if (points + 11 <= 21) {
-                points += 11;
+                points += 11; // Ass als 11 zählen
             } else {
-                points += 1;
+                points += 1; // Ass als 1 zählen
             }
         }
-
+    
         return points;
     }
+    
 
     // Spiel starten
     function startGame() {
@@ -136,16 +138,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Dealer spielt
     function playDealer() {
-        revealDealerHiddenCard();
-
+        revealDealerHiddenCard(); // Verdeckte Karte aufdecken
+    
         while (calculatePoints(dealerHand) < 17) {
             const card = drawRandomCard(deck);
             dealerHand.push(card);
             displayCard(card, dealerCardsContainer);
+    
+            // Punkte des Dealers aktualisieren
+            const dealerPoints = calculatePoints(dealerHand);
+            document.getElementById("dealer-points").textContent = dealerPoints;
+    
+            if (dealerPoints > 21) {
+                console.log("Dealer hat über 21 Punkte!");
+                break; // Schleife beenden, wenn Dealer über 21 Punkte hat
+            }
         }
-
-        checkGameResult();
+    
+        checkGameResult(); // Spielausgang prüfen
     }
+    
 
     // Ergebnis prüfen
     function checkGameResult() {
