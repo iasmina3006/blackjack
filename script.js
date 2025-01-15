@@ -74,30 +74,28 @@ document.addEventListener("DOMContentLoaded", () => {
     function calculatePoints(hand) {
         let points = 0;
         let aces = 0;
-    
+
         hand.forEach(card => {
             const value = card.split(" ")[0];
             if (!isNaN(value)) {
-                points += parseInt(value); // Zahlenkarten
+                points += parseInt(value);
             } else if (["J", "Q", "K"].includes(value)) {
-                points += 10; // Bildkarten
+                points += 10;
             } else if (value === "A") {
-                aces += 1; // Ass
+                aces += 1;
             }
         });
-    
-        // Dynamische Bewertung der Asses
+
         for (let i = 0; i < aces; i++) {
             if (points + 11 <= 21) {
-                points += 11; // Ass als 11 zählen
+                points += 11;
             } else {
-                points += 1; // Ass als 1 zählen
+                points += 1;
             }
         }
-    
+
         return points;
     }
-    
 
     // Spiel starten
     function startGame() {
@@ -125,6 +123,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         hitButton.disabled = false;
         standButton.disabled = false;
+
+        // Double Down aktivieren, nur bei den ersten zwei Karten
+        doubleDownButton.disabled = false;
     }
 
     // Verdeckte Karte des Dealers aufdecken
@@ -138,26 +139,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Dealer spielt
     function playDealer() {
-        revealDealerHiddenCard(); // Verdeckte Karte aufdecken
-    
+        revealDealerHiddenCard();
+
         while (calculatePoints(dealerHand) < 17) {
             const card = drawRandomCard(deck);
             dealerHand.push(card);
             displayCard(card, dealerCardsContainer);
-    
-            // Punkte des Dealers aktualisieren
-            const dealerPoints = calculatePoints(dealerHand);
-            document.getElementById("dealer-points").textContent = dealerPoints;
-    
-            if (dealerPoints > 21) {
-                console.log("Dealer hat über 21 Punkte!");
-                break; // Schleife beenden, wenn Dealer über 21 Punkte hat
-            }
         }
-    
-        checkGameResult(); // Spielausgang prüfen
+
+        checkGameResult();
     }
-    
 
     // Ergebnis prüfen
     function checkGameResult() {
@@ -207,12 +198,58 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // "Stand"-Button hinzufügen
+    // Double Down-Button erstellen
+    const doubleDownButton = document.createElement("button");
+    doubleDownButton.id = "double-down-button";
+    doubleDownButton.className = "btn btn-success btn-lg mt-3";
+    doubleDownButton.textContent = "Double";
+    doubleDownButton.disabled = true; // Button ist standardmäßig deaktiviert
+    startGameButton.insertAdjacentElement("afterend", doubleDownButton);
+
+    // Double Down-Logik
+    doubleDownButton.addEventListener("click", () => {
+        if (chips < bet * 2) {
+            alert("Nicht genug Chips, um den Einsatz zu verdoppeln!");
+            return;
+        }
+
+        chips -= bet; // Einsatz verdoppeln
+        bet *= 2;
+        updateChipsDisplay();
+
+        // Spieler zieht eine Karte
+        const card = drawRandomCard(deck);
+        playerHand.push(card);
+        displayCard(card, playerCardsContainer);
+
+        const playerPoints = calculatePoints(playerHand);
+        document.getElementById("player-points").textContent = playerPoints;
+
+        // Überprüfen, ob der Spieler "Bust" geht
+        if (playerPoints > 21) {
+            setTimeout(() => {
+                alert("Bust! Du hast verloren.");
+                hitButton.disabled = true;
+                doubleDownButton.disabled = true;
+                standButton.disabled = true;
+                playDealer();
+            }, 500);
+            return;
+        }
+
+        // Spieler beendet seinen Zug automatisch
+        hitButton.disabled = true;
+        doubleDownButton.disabled = true;
+        standButton.disabled = true;
+        playDealer();
+    });
+
+    // "Stand"-Button erstellen
     const standButton = document.createElement("button");
     standButton.id = "stand-button";
     standButton.className = "btn btn-primary btn-lg mt-3";
     standButton.textContent = "Stand";
-    standButton.disabled = true;
+    standButton.disabled = true; // Button ist standardmäßig deaktiviert
     standButton.addEventListener("click", () => {
         hitButton.disabled = true;
         standButton.disabled = true;
