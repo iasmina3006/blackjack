@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const playerCardsContainer = document.getElementById("player-cards");
     const dealerCardsContainer = document.getElementById("dealer-cards");
 
+    let chips = 1000; // Startguthaben
+    let bet = 100; // Standard-Einsatz
     let deck = [];
     let playerHand = [];
     let dealerHand = [];
@@ -11,7 +13,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
     const suits = ["Herz", "Karo", "Pik", "Kreuz"];
-
+     // Chips- und Einsatzanzeige erstellen
+     const chipsDisplay = document.createElement("div");
+     chipsDisplay.id = "chips-display";
+     chipsDisplay.className = "mt-3";
+     chipsDisplay.textContent = `Chips: ${chips}`;
+     document.body.insertBefore(chipsDisplay, document.body.firstChild);
+ 
+     const betDisplay = document.createElement("div");
+     betDisplay.id = "bet-display";
+     betDisplay.className = "mt-3";
+     betDisplay.textContent = `Einsatz: ${bet}`;
+     document.body.insertBefore(betDisplay, document.body.firstChild);
+ 
+     // Funktion zur Aktualisierung der Anzeige
+     function updateChipsDisplay() {
+         chipsDisplay.textContent = `Chips: ${chips}`;
+         betDisplay.textContent = `Einsatz: ${bet}`;
+     }
+ 
+     // Test: Anzeigen aktualisieren
+     setTimeout(() => {
+         chips -= 100; // Beispiel: Chips verringern
+         updateChipsDisplay();
+     }, 2000);
+ });
     function createDeck() {
         const deck = [];
         suits.forEach((suit) => {
