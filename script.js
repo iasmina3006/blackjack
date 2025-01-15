@@ -65,28 +65,31 @@ document.addEventListener("DOMContentLoaded", () => {
     function calculatePoints(hand) {
         let points = 0;
         let aces = 0;
-
+    
+        // Punkte berechnen
         hand.forEach(card => {
             const value = card.split(" ")[0];
             if (!isNaN(value)) {
-                points += parseInt(value);
+                points += parseInt(value); // Zahlenkarten
             } else if (["J", "Q", "K"].includes(value)) {
-                points += 10;
+                points += 10; // Bildkarten
             } else if (value === "A") {
-                aces += 1;
+                aces += 1; // Ass
             }
         });
-
+    
+        // Dynamische Bewertung von Assen
         for (let i = 0; i < aces; i++) {
             if (points + 11 <= 21) {
-                points += 11;
+                points += 11; // Ass als 11 zählen
             } else {
-                points += 1;
+                points += 1; // Ass als 1 zählen
             }
         }
-
+    
         return points;
     }
+    
 
     function startGame() {
         if (chips < bet) {
@@ -117,24 +120,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function revealDealerHiddenCard() {
-        dealerHand.push(dealerHiddenCard);
-        dealerHiddenCard = null;
-        dealerCardsContainer.innerHTML = "";
+        dealerHand.push(dealerHiddenCard); // Verdeckte Karte zur Hand hinzufügen
+        dealerHiddenCard = null; // Verdeckte Karte entfernen
+        dealerCardsContainer.innerHTML = ""; // Kartenanzeige leeren
+    
+        // Alle Karten des Dealers anzeigen
         dealerHand.forEach(card => displayCard(card, dealerCardsContainer));
-        document.getElementById("dealer-points").textContent = calculatePoints(dealerHand);
+    
+        // Punkte aktualisieren
+        const dealerPoints = calculatePoints(dealerHand);
+        document.getElementById("dealer-points").textContent = dealerPoints;
     }
+    
 
     function playDealer() {
-        revealDealerHiddenCard();
-
+        revealDealerHiddenCard(); // Verdeckte Karte aufdecken
+    
+        // Dealer zieht Karten, bis er mindestens 17 Punkte hat
         while (calculatePoints(dealerHand) < 17) {
             const card = drawRandomCard(deck);
-            dealerHand.push(card);
-            displayCard(card, dealerCardsContainer);
+            dealerHand.push(card); // Neue Karte zur Hand hinzufügen
+            displayCard(card, dealerCardsContainer); // Karte anzeigen
+    
+            // Punkte des Dealers aktualisieren
+            const dealerPoints = calculatePoints(dealerHand);
+            document.getElementById("dealer-points").textContent = dealerPoints;
+    
+            // Schleife beenden, wenn Dealer über 21 Punkte hat
+            if (dealerPoints > 21) {
+                break;
+            }
         }
-
-        checkGameResult();
+    
+        checkGameResult(); // Ergebnis überprüfen
     }
+    
 
     function checkGameResult() {
         const playerPoints = calculatePoints(playerHand);
